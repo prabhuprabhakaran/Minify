@@ -44,7 +44,7 @@ public class URLService {
     }
 
     public Optional<URLEntity> getURLEntity(String key) {
-        return uRLRepository.findByShortenurlAndCreatedBy(key, Utils.getUserPrincipal());
+        return uRLRepository.findByShortenurl(key);
     }
 
     public List<URLEntity> ListURLEntity() {
@@ -52,7 +52,4 @@ public class URLService {
         return lURL;
     }
 
-    public void getURLEntity(long MIN_VALUE) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 }

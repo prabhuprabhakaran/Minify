@@ -22,5 +22,5 @@ public interface URLRepository extends JpaRepository<URLEntity, Long> {
 
     public List<URLEntity> findByCreatedBy(String createdBy);
 
-    public Optional<URLEntity> findByShortenurlAndCreatedBy(String shortenurl, String createdBy);
+    public Optional<URLEntity> findByShortenurl(String shortenurl);
 }
