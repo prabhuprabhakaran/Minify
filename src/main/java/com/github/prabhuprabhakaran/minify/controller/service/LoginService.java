@@ -10,6 +10,9 @@ import com.github.prabhuprabhakaran.minify.repositories.UserRepository;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +21,7 @@ import org.springframework.stereotype.Service;
  * @author Prabhu Prabhakaran
  */
 @Service
-public class LoginService {
+public class LoginService implements UserDetailsService {
 
     @Autowired
     UserRepository userRepository;
@@ -37,6 +40,15 @@ public class LoginService {
             lReturn = true;
         }
         return lReturn;
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Optional<Users> findByUsername = userRepository.findByUsername(username.toLowerCase());
+        if (findByUsername.isPresent()) {
+            return findByUsername.get();
+        }
+        return null;
     }
 
 }

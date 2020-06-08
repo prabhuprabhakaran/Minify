@@ -1,11 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.github.prabhuprabhakaran.minify.config;
 
+import com.github.prabhuprabhakaran.minify.controller.service.LoginService;
+import com.github.prabhuprabhakaran.minify.entity.Users;
 import com.github.prabhuprabhakaran.minify.repositories.UserRepository;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -21,14 +19,18 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
  *
  * @author Prabhu Prabhakaran
  */
-@EnableWebSecurity
+@EnableWebSecurity(debug = true)
 public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    private LoginService loginService;
 
     public AppSecurityConfig() {
     }
@@ -49,7 +51,8 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService()).passwordEncoder(passwordEncoder());
+        auth.userDetailsService(loginService)
+                .passwordEncoder(passwordEncoder());
     }
 
     @Order(1)
@@ -59,8 +62,6 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
         @Value("${app.rest.api.key.header.name}")
         private String principalRequestHeader;
 
-        @Value("${app.rest.api.key.value}")
-        private String principalRequestValue;
         @Autowired
         UserRepository userRepository;
 
@@ -83,14 +84,14 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
                 @Override
                 public Authentication authenticate(Authentication authentication) throws AuthenticationException {
                     String principal = (String) authentication.getPrincipal();
-                    //Get User AuthToken and check Equals
-                    userRepository.findByUsername(principal);
-                    if (!principalRequestValue.equals(principal)) {
-                        throw new BadCredentialsException("The API key was not found or not the expected value.");
+                    Optional<Users> lOptionaUser = userRepository.findByToken(principal);
+                    if (lOptionaUser.isPresent()) {
+                        if (lOptionaUser.get().getToken().equals(principal)) {
+                            authentication.setAuthenticated(true);
+                            return authentication;
+                        }
                     }
-                    authentication.setAuthenticated(true);
-                    System.out.println("authentication.setAuthenticated(true);");
-                    return authentication;
+                    throw new BadCredentialsException("The API key was not found or not the expected value.");
                 }
             });
             return filter;
