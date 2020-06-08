@@ -5,7 +5,9 @@
  */
 package com.github.prabhuprabhakaran.minify.controller;
 
+import com.github.prabhuprabhakaran.minify.controller.service.LoginService;
 import com.github.prabhuprabhakaran.minify.entity.Users;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,6 +24,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequestMapping("/app")
 public class LoginController {
+
+    @Autowired
+    LoginService loginService;
 
     @GetMapping()
     public String defaultPage(Model model) {
@@ -55,7 +60,17 @@ public class LoginController {
     public String register(@ModelAttribute Users user, Model model) {
         System.out.println(user.getUsername());
         System.out.println(user.getPassword());
-        model.addAttribute("success", "Registered Sucessfully");
+        boolean created = false;
+        try {
+            created = loginService.registerNewUser(user.getUsername(), user.getPassword());
+            if (created) {
+                model.addAttribute("success", "Registered Sucessfully");
+            } else {
+                model.addAttribute("error", "Registration Failed");
+            }
+        } catch (Exception e) {
+            model.addAttribute("error", "Username should be a valid Email");
+        }
         return "login";
     }
 
