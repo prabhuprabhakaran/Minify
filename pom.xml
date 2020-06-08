@@ -126,6 +126,12 @@
             <artifactId>jquery</artifactId>
             <version>3.5.1</version>
         </dependency>
+        <!--Apache-->
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.14</version>
+        </dependency>
         <!--Test-->      
         <dependency>
             <groupId>org.springframework.boot</groupId>

@@ -6,6 +6,8 @@
 package com.github.prabhuprabhakaran.minify.repositories;
 
 import com.github.prabhuprabhakaran.minify.entity.URLEntity;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,4 +17,10 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface URLRepository extends JpaRepository<URLEntity, Long> {
+
+    public Optional<URLEntity> findByUrlHashCodeAndCreatedBy(Integer hashcode, String createdBy);
+
+    public List<URLEntity> findByCreatedBy(String createdBy);
+
+    public Optional<URLEntity> findByShortenurlAndCreatedBy(String shortenurl, String createdBy);
 }
