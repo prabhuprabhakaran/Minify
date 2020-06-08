@@ -6,6 +6,7 @@
 package com.github.prabhuprabhakaran.minify.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,5 +22,10 @@ public class RestAPIController {
     @GetMapping("/encode")
     public ResponseEntity encode() {
         return ResponseEntity.ok("Encode API");
+    }
+
+    @GetMapping("/denied")
+    public ResponseEntity denied() {
+        return ResponseEntity.ok("Denied API");
     }
 }

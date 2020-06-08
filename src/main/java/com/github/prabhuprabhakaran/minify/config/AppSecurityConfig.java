@@ -7,22 +7,25 @@ package com.github.prabhuprabhakaran.minify.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  *
  * @author Prabhu Prabhakaran
  */
-@EnableWebSecurity
+@EnableWebSecurity(debug = true)
 public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Value("${app.rest.api.key.header.name}")
@@ -35,46 +38,51 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring()
+                .antMatchers("/v2/api-docs",
+                        "/swagger-resources/**",
+                        "/swagger-ui.html",
+                        "/webjars/**");
+    }
+
+    @Override
     protected void configure(HttpSecurity http) throws Exception {
 //        , "/static/**"
-        http.antMatcher("/").authorizeRequests()
-                .antMatchers("/").permitAll();
-
-        http.antMatcher("/app/**").authorizeRequests()
-                .antMatchers("/app/login", "/app/logout", "/app/register", "/app/accessdenied", "/app/error").permitAll()
+        http.httpBasic().disable()
+                .csrf().disable()
+                //Default URL Handlling
+                .antMatcher("/").authorizeRequests()
+                .antMatchers("/").permitAll()
+                .antMatchers("/swagger-ui.html", "/swagger-resources/**", "/v2/api-docs").permitAll()
+                .and()
+                //Rest URL Handlling
+                .antMatcher("/api/**")
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and().addFilterBefore(getAPIKeyFilter(), UsernamePasswordAuthenticationFilter.class)
+                .authorizeRequests()
+                .antMatchers("/api").authenticated()
+                .antMatchers("/api/**").authenticated()
+                .and()
+                //APP URL Handlling
+                .antMatcher("/app/**")
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
+                .and()
+                .exceptionHandling().accessDeniedPage("/app/denied")
                 .and()
                 .formLogin()
-                .loginPage("/app/login")
-                .failureUrl("/app/login")
-                .defaultSuccessUrl("/app/home")
-                .successForwardUrl("/app/home")
-                .failureForwardUrl("/app/login")
+                .loginPage("/app/login").failureUrl("/app/login")
+                .successForwardUrl("/app/home").failureForwardUrl("/app/login")
                 .and()
-                .logout()
-                .logoutSuccessUrl("/app/login").permitAll()
+                .logout().logoutUrl("/app/logout").logoutSuccessUrl("/app/login")
                 .and()
-                .exceptionHandling().accessDeniedPage("/app/accessdenied");
-
-        http.antMatcher("/api/**")
-                .authorizeRequests()
-                .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).
-                and().addFilter(getAPIKeyFilter());
-
-        http.authorizeRequests().anyRequest().authenticated();
-
-//        JwtTokenAuthenticationFilter customFilter = new JwtTokenAuthenticationFilter(jwtTokenProvider);
-//
-//        http.antMatcher("/api/**")
-//                .authorizeRequests()
-//                .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
-//                .and()
-//                .addFilterBefore(customFilter, UsernamePasswordAuthenticationFilter.class)
-//                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//                .and()
-//                .anyRequest().authenticated();
-        http.httpBasic().disable();
-        http.csrf().disable();
+                .authorizeRequests().antMatchers(HttpMethod.OPTIONS, "/app").permitAll()
+                .antMatchers(HttpMethod.HEAD, "/app").permitAll()
+                .antMatchers(HttpMethod.OPTIONS, "/app/**").permitAll()
+                .antMatchers(HttpMethod.HEAD, "/app/**").permitAll()
+                .antMatchers("/app/login", "/app/logout", "/app/register", "/app/denied", "/app/error").permitAll()
+                .antMatchers("/app/home").authenticated()
+                .antMatchers("/app/home/**").authenticated();
     }
 
     @Bean
@@ -88,6 +96,7 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     public APIKeyAuthFilter getAPIKeyFilter() {
+        System.out.println("CALLING HERE");
         APIKeyAuthFilter filter = new APIKeyAuthFilter(principalRequestHeader);
         filter.setAuthenticationManager(new AuthenticationManager() {
             @Override

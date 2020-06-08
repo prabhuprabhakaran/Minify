@@ -30,7 +30,7 @@ public class LoginController {
         return "home";
     }
 
-    @GetMapping("/login")
+    @GetMapping({"/login", "/register"})
     public String loginPage(Model model) {
         return "login";
     }
@@ -55,7 +55,7 @@ public class LoginController {
         return "error";
     }
 
-    @GetMapping("/accessdenied")
+    @GetMapping("/denied")
     public String denied(Model model) {
         return "denied";
     }

@@ -19,6 +19,7 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Version;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -42,6 +43,7 @@ public class Users implements UserDetails {
     Long id;
 
     @NotEmpty
+    @Email
     private String username;
 
     @NotEmpty

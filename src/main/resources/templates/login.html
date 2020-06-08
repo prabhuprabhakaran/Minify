@@ -14,7 +14,7 @@
             <div class="row">
                 <div class="col-md-6 login-form-1">
                     <h3>Login</h3>
-                    <form>
+                    <form action="/app/login">
                         <div class="form-group">
                             <input type="text" class="form-control" placeholder="Your Email *" value="" />
                         </div>
@@ -25,18 +25,22 @@
                             <input type="submit" class="btnSubmit" value="Login" />
                         </div>
                     </form>
-                    <h3>Sign In with</h3>  
-                    <div class="g-signin2" data-onsuccess="onSignIn"></div>
+                    <div class="row">
+                        <h5>Sign In with</h5>&nbsp;&nbsp;&nbsp;<div class="g-signin2" data-onsuccess="onSignIn"></div>
+                    </div>
                 </div>
 
                 <div class="col-md-6 login-form-2">
                     <h3>Sign up</h3>
-                    <form>
+                    <form action="/app/register">
                         <div class="form-group">
                             <input type="text" class="form-control" placeholder="Your Email *" value="" />
                         </div>
                         <div class="form-group">
                             <input type="password" class="form-control" placeholder="Your Password *" value="" />
+                        </div>
+                        <div class="form-group">
+                            <input type="password" class="form-control" placeholder="Confirm Password *" value="" />
                         </div>
                         <div class="form-group">
                             <input type="submit" class="btnSubmit" value="Register" />
@@ -47,7 +51,7 @@
                 </div>
             </div>
         </div>
-        <script type="text/javascript" th:src="@{/webjars/jquery/3.2.1/jquery.min.js/}"></script>
-        <script type="text/javascript" th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+        <script type="text/javascript" th:src="@{/webjars/jquery/3.5.1/jquery.min.js/}"></script>
+        <script type="text/javascript" th:src="@{/webjars/bootstrap/4.5.0/js/bootstrap.min.js}"></script>
     </body>
 </html>
