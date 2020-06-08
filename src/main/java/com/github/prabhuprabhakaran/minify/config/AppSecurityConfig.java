@@ -40,7 +40,7 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/v2/api-docs",
                         "/swagger-resources/**",
                         "/swagger-ui.html",
-                        "/webjars/**");
+                        "/webjars/**", "/favicon.ico");
     }
 
     @Bean
@@ -116,8 +116,8 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers("/app/home/**").authenticated()
                     .and()
                     .formLogin()
-                    .loginPage("/app/login").failureUrl("/app/login")
-                    .successForwardUrl("/app/home").failureForwardUrl("/app/login")
+                    .loginPage("/app/login").failureUrl("/app/login?error=loginError")
+                    .successForwardUrl("/app/home")
                     .permitAll()
                     .defaultSuccessUrl("/app/home", true)
                     .and()
