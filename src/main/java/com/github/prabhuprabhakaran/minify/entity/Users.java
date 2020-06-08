@@ -44,10 +44,16 @@ public class Users implements UserDetails {
 
     @NotEmpty
     @Email
+    @Column(name = "username")
     private String username;
 
     @NotEmpty
+    @Column(name = "password")
     private String password;
+
+    @NotEmpty
+    @Column(name = "token")
+    private String token;
 
     @Size(max = 2147483647)
     @Column(name = "active")
@@ -111,7 +117,7 @@ public class Users implements UserDetails {
     }
 
     @PrePersist
-    private void prePersistFunction() {
+    public void prePersistFunction() {
         active = "Y";
         createdBy = Utils.getUserPrincipal();
         createdAt = Timestamp.from(Instant.now());

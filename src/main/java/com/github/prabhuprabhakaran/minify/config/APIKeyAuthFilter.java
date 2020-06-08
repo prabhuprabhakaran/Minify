@@ -12,7 +12,7 @@ import org.springframework.security.web.authentication.preauth.AbstractPreAuthen
  *
  * @author Prabhu Prabhakaran
  */
-public class APIKeyAuthFilter  extends AbstractPreAuthenticatedProcessingFilter {
+public class APIKeyAuthFilter extends AbstractPreAuthenticatedProcessingFilter {
 
     private String principalRequestHeader;
 
@@ -22,7 +22,6 @@ public class APIKeyAuthFilter  extends AbstractPreAuthenticatedProcessingFilter 
 
     @Override
     protected Object getPreAuthenticatedPrincipal(HttpServletRequest request) {
-        System.out.println("Here PP");
         return request.getHeader(principalRequestHeader);
     }
 

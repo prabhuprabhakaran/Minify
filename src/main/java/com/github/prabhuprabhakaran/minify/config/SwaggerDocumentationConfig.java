@@ -25,7 +25,7 @@ import springfox.documentation.spi.service.contexts.SecurityContext;
 @Configuration
 public class SwaggerDocumentationConfig {
 
-    public static final String AUTHORIZATION_HEADER = "Authorization";
+    public static final String AUTHORIZATION_HEADER = "X-AuthToken";
     public static final String DEFAULT_INCLUDE_PATTERN = "/api/.*";
 
     ApiInfo apiInfo() {
@@ -64,7 +64,7 @@ public class SwaggerDocumentationConfig {
     }
 
     private ApiKey apiKey() {
-        return new ApiKey("JWT", AUTHORIZATION_HEADER, "header");
+        return new ApiKey("X-AuthToken", AUTHORIZATION_HEADER, "header");
     }
 
     private SecurityContext securityContext() {
@@ -80,7 +80,7 @@ public class SwaggerDocumentationConfig {
         AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
         authorizationScopes[0] = authorizationScope;
         return Lists.newArrayList(
-                new SecurityReference("JWT", authorizationScopes));
+                new SecurityReference("X-AuthToken", authorizationScopes));
     }
 
 }

@@ -5,8 +5,12 @@
  */
 package com.github.prabhuprabhakaran.minify.config;
 
+import com.github.prabhuprabhakaran.minify.repositories.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -19,7 +23,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  *
@@ -27,12 +30,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  */
 @EnableWebSecurity(debug = true)
 public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
-
-    @Value("${app.rest.api.key.header.name}")
-    private String principalRequestHeader;
-
-    @Value("${app.rest.api.key.value}")
-    private String principalRequestValue;
 
     public AppSecurityConfig() {
     }
@@ -46,45 +43,6 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/webjars/**");
     }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-//        , "/static/**"
-        http.httpBasic().disable()
-                .csrf().disable()
-                //Default URL Handlling
-                .antMatcher("/").authorizeRequests()
-                .antMatchers("/").permitAll()
-                .antMatchers("/swagger-ui.html", "/swagger-resources/**", "/v2/api-docs").permitAll()
-                .and()
-                //Rest URL Handlling
-                .antMatcher("/api/**")
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and().addFilterBefore(getAPIKeyFilter(), UsernamePasswordAuthenticationFilter.class)
-                .authorizeRequests()
-                .antMatchers("/api").authenticated()
-                .antMatchers("/api/**").authenticated()
-                .and()
-                //APP URL Handlling
-                .antMatcher("/app/**")
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
-                .and()
-                .exceptionHandling().accessDeniedPage("/app/denied")
-                .and()
-                .formLogin()
-                .loginPage("/app/login").failureUrl("/app/login")
-                .successForwardUrl("/app/home").failureForwardUrl("/app/login")
-                .and()
-                .logout().logoutUrl("/app/logout").logoutSuccessUrl("/app/login")
-                .and()
-                .authorizeRequests().antMatchers(HttpMethod.OPTIONS, "/app").permitAll()
-                .antMatchers(HttpMethod.HEAD, "/app").permitAll()
-                .antMatchers(HttpMethod.OPTIONS, "/app/**").permitAll()
-                .antMatchers(HttpMethod.HEAD, "/app/**").permitAll()
-                .antMatchers("/app/login", "/app/logout", "/app/register", "/app/denied", "/app/error").permitAll()
-                .antMatchers("/app/home").authenticated()
-                .antMatchers("/app/home/**").authenticated();
-    }
-
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -95,21 +53,79 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(userDetailsService()).passwordEncoder(passwordEncoder());
     }
 
-    public APIKeyAuthFilter getAPIKeyFilter() {
-        System.out.println("CALLING HERE");
-        APIKeyAuthFilter filter = new APIKeyAuthFilter(principalRequestHeader);
-        filter.setAuthenticationManager(new AuthenticationManager() {
-            @Override
-            public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-                String principal = (String) authentication.getPrincipal();
-                //Get User AuthToken and check Equals
-                if (!principalRequestValue.equals(principal)) {
-                    throw new BadCredentialsException("The API key was not found or not the expected value.");
+    @Order(1)
+    @Configuration
+    public static class RestConfiguration extends WebSecurityConfigurerAdapter {
+
+        @Value("${app.rest.api.key.header.name}")
+        private String principalRequestHeader;
+
+        @Value("${app.rest.api.key.value}")
+        private String principalRequestValue;
+        @Autowired
+        UserRepository userRepository;
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            http.antMatcher("/api/**")
+                    .cors().and()
+                    .csrf().disable()
+                    .authorizeRequests()
+                    .antMatchers("/api/denied").permitAll()
+                    .anyRequest().authenticated()
+                    .and()
+                    .addFilter(getAPIKeyFilter())
+                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        }
+
+        public APIKeyAuthFilter getAPIKeyFilter() {
+            APIKeyAuthFilter filter = new APIKeyAuthFilter(principalRequestHeader);
+            filter.setAuthenticationManager(new AuthenticationManager() {
+                @Override
+                public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+                    String principal = (String) authentication.getPrincipal();
+                    //Get User AuthToken and check Equals
+                    userRepository.findByUsername(principal);
+                    if (!principalRequestValue.equals(principal)) {
+                        throw new BadCredentialsException("The API key was not found or not the expected value.");
+                    }
+                    authentication.setAuthenticated(true);
+                    System.out.println("authentication.setAuthenticated(true);");
+                    return authentication;
                 }
-                authentication.setAuthenticated(true);
-                return authentication;
-            }
-        });
-        return filter;
+            });
+            return filter;
+        }
+    }
+
+    @Order(2)
+    @Configuration
+    public static class WebConfiguration extends WebSecurityConfigurerAdapter {
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            http.antMatcher("/**")
+                    .csrf()
+                    .and()
+                    .csrf().disable()
+                    .authorizeRequests()
+                    .antMatchers("/**/favicon.ico", "/**/*.css", "/**/*.js", "/**/*.png", "/**/*.xlsx", "/fonts/**").permitAll()
+                    .antMatchers("/swagger-ui.html", "/swagger-resources/**", "/v2/api-docs").permitAll()
+                    .antMatchers(HttpMethod.HEAD, "/app").permitAll()
+                    .antMatchers(HttpMethod.OPTIONS, "/app/**").permitAll()
+                    .antMatchers(HttpMethod.HEAD, "/app/**").permitAll()
+                    .antMatchers("/app/login", "/app/logout", "/app/register").permitAll()
+                    .antMatchers("/app/home").authenticated()
+                    .antMatchers("/app/home/**").authenticated()
+                    .and()
+                    .formLogin()
+                    .loginPage("/app/login").failureUrl("/app/login")
+                    .successForwardUrl("/app/home").failureForwardUrl("/app/login")
+                    .permitAll()
+                    .defaultSuccessUrl("/app/home", true)
+                    .and()
+                    .logout().logoutUrl("/app/logout").logoutSuccessUrl("/app/login");
+        }
+
     }
 }

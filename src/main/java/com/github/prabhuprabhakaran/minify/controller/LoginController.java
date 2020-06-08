@@ -50,14 +50,4 @@ public class LoginController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/error")
-    public String error() {
-        return "error";
-    }
-
-    @GetMapping("/denied")
-    public String denied(Model model) {
-        return "denied";
-    }
-
 }
