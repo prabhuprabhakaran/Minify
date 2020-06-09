@@ -36,7 +36,7 @@ public class SwaggerDocumentationConfig {
                 .licenseUrl("https://www.apache.org/licenses/LICENSE-2.0")
                 .termsOfServiceUrl("")
                 .version("1.0")
-                .contact(new Contact("Prabhu Prabhakaran", "https://prabhuprabhakaran.info", "p.r.c.prabhu@gmai.com"))
+                .contact(new Contact("Prabhu Prabhakaran", "https://prabhuprabhakaran.info", "p.r.c.prabhu@gmail.com"))
                 .build();
     }
 
