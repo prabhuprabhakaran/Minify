@@ -19,14 +19,13 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
  *
  * @author Prabhu Prabhakaran
  */
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity
 public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -44,6 +43,28 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/webjars/**", "/favicon.ico");
     }
 
+//    @Bean
+//    public ClientRegistrationRepository clientRegistrationRepository() {
+//        List<ClientRegistration> registrations = new ArrayList<>();
+//        registrations.add(googleClientRegistration());
+//        return new InMemoryClientRegistrationRepository(registrations);
+//    }
+//
+//    private ClientRegistration googleClientRegistration() {
+//        return ClientRegistration.withRegistrationId("google")
+//                .clientId("google-client-id")
+//                .clientSecret("google-client-secret")
+//                .clientAuthenticationMethod(ClientAuthenticationMethod.BASIC)
+//                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+//                .redirectUriTemplate("{baseUrl}/login/oauth2/code/{registrationId}")
+//                .scope("openid", "profile", "email", "address", "phone")
+//                .authorizationUri("https://accounts.google.com/o/oauth2/v2/auth")
+//                .tokenUri("https://www.googleapis.com/oauth2/v4/token")
+//                .userInfoUri("https://www.googleapis.com/oauth2/v3/userinfo")
+//                .userNameAttributeName(IdTokenClaimNames.SUB)
+//                .jwkSetUri("https://www.googleapis.com/oauth2/v3/certs")
+//                .clientName("Google").build();
+//    }
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -59,11 +80,8 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
     @Configuration
     public static class RestConfiguration extends WebSecurityConfigurerAdapter {
 
-        @Value("${app.rest.api.key.header.name}")
-        private String principalRequestHeader;
-
         @Autowired
-        UserRepository userRepository;
+        APIKeyAuthFilter filter;
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
@@ -74,27 +92,8 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers("/api/denied").permitAll()
                     .anyRequest().authenticated()
                     .and()
-                    .addFilter(getAPIKeyFilter())
+                    .addFilter(filter)
                     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        }
-
-        public APIKeyAuthFilter getAPIKeyFilter() {
-            APIKeyAuthFilter filter = new APIKeyAuthFilter(principalRequestHeader);
-            filter.setAuthenticationManager(new AuthenticationManager() {
-                @Override
-                public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-                    String principal = (String) authentication.getPrincipal();
-                    Optional<Users> lOptionaUser = userRepository.findByToken(principal);
-                    if (lOptionaUser.isPresent()) {
-                        if (lOptionaUser.get().getToken().equals(principal)) {
-                            authentication.setAuthenticated(true);
-                            return authentication;
-                        }
-                    }
-                    throw new BadCredentialsException("The API key was not found or not the expected value.");
-                }
-            });
-            return filter;
         }
     }
 
@@ -124,5 +123,18 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
                     .logout().logoutUrl("/app/logout").logoutSuccessUrl("/app/login");
         }
 
+    }
+
+    @Order(3)
+    @Configuration
+    public static class OauthConfiguration extends WebSecurityConfigurerAdapter {
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            http.authorizeRequests()
+                    .anyRequest().authenticated()
+                    .and()
+                    .oauth2Login();
+        }
     }
 }

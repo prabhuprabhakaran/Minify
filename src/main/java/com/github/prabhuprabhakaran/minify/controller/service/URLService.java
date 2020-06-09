@@ -6,13 +6,16 @@
 package com.github.prabhuprabhakaran.minify.controller.service;
 
 import com.github.prabhuprabhakaran.minify.entity.URLEntity;
+import com.github.prabhuprabhakaran.minify.entity.Users;
 import com.github.prabhuprabhakaran.minify.repositories.URLRepository;
+import com.github.prabhuprabhakaran.minify.repositories.UserRepository;
 import com.github.prabhuprabhakaran.minify.utils.MyEncoder;
 import com.github.prabhuprabhakaran.minify.utils.Utils;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 /**
  *
@@ -24,22 +27,38 @@ public class URLService {
     @Autowired
     URLRepository uRLRepository;
     @Autowired
+    UserRepository userRepository;
+    @Autowired
     MyEncoder encoder;
 
     public boolean addURLEntity(URLEntity entity) {
-        int hashCode = entity.getUrl().hashCode();
-        entity.setUrlHashCode(hashCode);
-        Optional<URLEntity> lURL = uRLRepository.findByUrlHashCodeAndCreatedBy(hashCode, Utils.getUserPrincipal());
-        if (lURL.isPresent()) {
+        if (ObjectUtils.isEmpty(entity.getUrl())) {
             return false;
         }
-        entity.setShortenurl(encoder.encode(hashCode));
+        int hashCode = entity.getUrl().hashCode();
+        int encodingHashCode = entity.getUrl().hashCode();
+        boolean addRandom = false;
+        entity.setUrlHashCode(hashCode);
+        Users lUser = Utils.getUserPrincipalObject();
+        if (lUser == null) {
+            lUser = userRepository.findByToken(Utils.getUserPrincipal()).get();
+        }
+        List<URLEntity> lURL = uRLRepository.findByUrlHashCodeAndCreatedBy(hashCode, lUser.getUsername());
+        if (!lURL.isEmpty()) {
+            addRandom = true;
+            for (URLEntity uRLEntity : lURL) {
+                if (uRLEntity.getUrl().equals(entity.getUrl())) {
+                    return false;
+                }
+            }
+        }
+        entity.setShortenurl(encoder.encode(encodingHashCode, lUser.getId().intValue(), addRandom));
         uRLRepository.save(entity);
         return true;
     }
 
-    public boolean deleteURLEntity(Long id) {
-        uRLRepository.deleteById(id);
+    public boolean deleteURLEntity(Integer id) {
+        uRLRepository.deleteById(id.longValue());
         return true;
     }
 

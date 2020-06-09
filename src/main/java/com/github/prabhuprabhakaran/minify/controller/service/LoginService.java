@@ -51,4 +51,12 @@ public class LoginService implements UserDetailsService {
         return null;
     }
 
+    public Users getUser(String username) throws UsernameNotFoundException {
+        Optional<Users> findByUsername = userRepository.findByUsername(username.toLowerCase());
+        if (findByUsername.isPresent()) {
+            return findByUsername.get();
+        }
+        return null;
+    }
+
 }

@@ -6,6 +6,7 @@
 package com.github.prabhuprabhakaran.minify.utils;
 
 import java.util.Arrays;
+import java.util.Random;
 import org.springframework.stereotype.Component;
 
 /**
@@ -25,8 +26,13 @@ public final class MyEncoder {
     private static final int ENCODE_MAX_VALUE_LENGTH = ("" + ENCODE_MAX_VALUE).length();
     private static final int ENCODE_TABLE_LENGTH = ENCODE_TABLE.length;
 
-    public String encode(long hashcode) {
-        String strHashcode = "" + hashcode;
+    public String encode(long hashcode, int userId, boolean addRandom) {
+        int nextInt = 0;
+        if (addRandom) {
+            Random random = new Random();
+            nextInt = random.nextInt(1000);
+        }
+        String strHashcode = "" + Math.abs(hashcode + userId + nextInt);
         return encode(strHashcode);
     }
 
@@ -34,10 +40,12 @@ public final class MyEncoder {
         if (hashcode.length() == 0) {
             return "";
         }
+        System.out.println(hashcode);
         String lReturn = "";
         int currEncodeLength = ENCODE_MAX_VALUE_LENGTH;
         if (hashcode.length() > ENCODE_MAX_VALUE_LENGTH) {
             int parseInt = Integer.parseInt(hashcode.substring(0, ENCODE_MAX_VALUE_LENGTH));
+            System.out.println(parseInt);
             if (parseInt > ENCODE_MAX_VALUE) {
                 currEncodeLength = ENCODE_MAX_VALUE_LENGTH - 1;
                 parseInt = Integer.parseInt(hashcode.substring(0, ENCODE_MAX_VALUE_LENGTH - 1));
@@ -66,11 +74,4 @@ public final class MyEncoder {
         return Long.parseLong(lReturn);
     }
 
-    public static void main(String[] args) {
-        MyEncoder encoder = new MyEncoder();
-        String encode = encoder.encode(1234567);
-        System.out.println(" Long -> " + 1234567);
-        System.out.println(" Encode -> " + encode);
-        System.out.println(" Decode -> " + encoder.decode(encode));
-    }
 }

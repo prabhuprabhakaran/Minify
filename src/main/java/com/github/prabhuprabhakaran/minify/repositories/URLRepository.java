@@ -18,7 +18,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface URLRepository extends JpaRepository<URLEntity, Long> {
 
-    public Optional<URLEntity> findByUrlHashCodeAndCreatedBy(Integer hashcode, String createdBy);
+    public List<URLEntity> findByUrlHashCodeAndCreatedBy(Integer hashcode, String createdBy);
 
     public List<URLEntity> findByCreatedBy(String createdBy);
 

@@ -3,19 +3,19 @@
     margin-bottom: 5%;
 }
 .login-form-1{
-    padding: 5%;
+    padding: 3%;
     box-shadow: 0 5px 8px 0 rgba(0, 0, 0, 0.2), 0 9px 26px 0 rgba(0, 0, 0, 0.19);
 }
 .login-form-1 h3{
     text-align: center;
     color: #333;
 }
-.login-form-2 h5{
+.login-form-1 h5{
     text-align: center;
-   color: #333;
+    color: #333;
 }
 .login-form-2{
-    padding: 5%;
+    padding: 3%;
     background: #0062cc;
     box-shadow: 0 5px 8px 0 rgba(0, 0, 0, 0.2), 0 9px 26px 0 rgba(0, 0, 0, 0.19);
 }
@@ -28,7 +28,7 @@
     color: #fff;
 }
 .login-container form{
-    padding: 10%;
+    padding: 8%;
 }
 .btnSubmit
 {

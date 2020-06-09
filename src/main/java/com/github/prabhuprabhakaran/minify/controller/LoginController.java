@@ -1,7 +1,9 @@
 package com.github.prabhuprabhakaran.minify.controller;
 
 import com.github.prabhuprabhakaran.minify.controller.service.LoginService;
+import com.github.prabhuprabhakaran.minify.entity.URLEntity;
 import com.github.prabhuprabhakaran.minify.entity.Users;
+import com.github.prabhuprabhakaran.minify.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -28,11 +30,6 @@ public class LoginController {
         return "redirect:/app/home";
     }
 
-    @GetMapping("/home")
-    public String homePage(Model model) {
-        return "home";
-    }
-
     @GetMapping({"/login", "/register"})
     public String loginPage(@RequestParam(required = false, defaultValue = "") String error, Model model) {
         model.addAttribute("user", new Users());
@@ -43,13 +40,11 @@ public class LoginController {
         return "login";
     }
 
-//    @PostMapping("/login")
-//    public ResponseEntity login(@ModelAttribute Users user) {
-//        System.out.println(user.getUsername());
-//        System.out.println(user.getPassword());
-//        return ResponseEntity.ok().build();
-//
-//    }
+    @RequestMapping("/Oauthlogin")
+    public ResponseEntity login() {
+        System.out.println("Im Here Google");
+        return ResponseEntity.ok().build();
+    }
 
     @PostMapping("/register")
     public String register(@ModelAttribute Users user, Model model) {

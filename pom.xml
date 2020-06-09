@@ -17,11 +17,11 @@
     </properties>
     <dependencies>
         <!--Spring-->
-        <dependency>
+        <!--        <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-ldap</artifactId>
             <version>${spring.version}</version>
-        </dependency>
+        </dependency>-->
         <!--        <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-openid</artifactId>
@@ -55,10 +55,15 @@
             <version>${spring.boot.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-oauth2-jose</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <!--        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-oauth2-resource-server</artifactId> 
             <version>${spring.boot.version}</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -85,13 +90,13 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>2.10.4</version>
-        </dependency>
+        </dependency><!--
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-hibernate5</artifactId>
             <version>2.11.0</version>
             <type>jar</type>
-        </dependency>
+        </dependency>-->
         <!--Database-->
         <dependency>
             <groupId>com.h2database</groupId>
@@ -125,12 +130,6 @@
             <groupId>org.webjars</groupId>
             <artifactId>jquery</artifactId>
             <version>3.5.1</version>
-        </dependency>
-        <!--Apache-->
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>1.14</version>
         </dependency>
         <!--Test-->      
         <dependency>

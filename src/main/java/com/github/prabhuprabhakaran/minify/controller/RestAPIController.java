@@ -7,6 +7,7 @@ package com.github.prabhuprabhakaran.minify.controller;
 
 import com.github.prabhuprabhakaran.minify.controller.service.URLService;
 import com.github.prabhuprabhakaran.minify.entity.URLEntity;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,15 +28,22 @@ public class RestAPIController {
     URLService lService;
 
     @GetMapping("/encode")
-    public ResponseEntity encode(@RequestParam String url) {
+    public ResponseEntity encode(@RequestParam String url, HttpServletRequest request) {
         URLEntity lEntity = new URLEntity();
         lEntity.setUrl(url);
-        boolean addURLEntity = lService.addURLEntity(lEntity);
-        if (addURLEntity) {
-            return ResponseEntity.ok(lEntity.getReturn());
-        } else {
+        try {
+            boolean addURLEntity = lService.addURLEntity(lEntity);
+            if (addURLEntity) {
+                return ResponseEntity.ok(lEntity.getReturn(request));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Already URL Found / Empty URL");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Already URL Found");
+                    .body("Should be a valid HTTP or HTTPS URL");
         }
+
     }
 }

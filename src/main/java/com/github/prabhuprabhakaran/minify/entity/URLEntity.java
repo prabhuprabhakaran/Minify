@@ -18,11 +18,13 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Version;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.URL;
 
 /**
  *
@@ -41,6 +43,7 @@ public class URLEntity {
     Long id;
     @Size(max = 2147483647)
     @Column(name = "url")
+    @URL
     String url;
     @Column(name = "urlhashcode")
     Integer urlHashCode;
@@ -76,10 +79,10 @@ public class URLEntity {
         updatedAt = Timestamp.from(Instant.now());
     }
 
-    public HashMap getReturn() {
+    public HashMap getReturn(HttpServletRequest request) {
         HashMap lHashMap = new HashMap();
         lHashMap.put("url", url);
-        lHashMap.put("shorentUrl", shortenurl);
+        lHashMap.put("shorentUrl", Utils.getShortUrl(request, shortenurl));
         lHashMap.put("user", createdBy);
         return lHashMap;
     }

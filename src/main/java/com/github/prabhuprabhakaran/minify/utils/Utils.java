@@ -5,6 +5,8 @@
  */
 package com.github.prabhuprabhakaran.minify.utils;
 
+import com.github.prabhuprabhakaran.minify.entity.Users;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -21,5 +23,20 @@ public class Utils {
         } else {
             return principal.toString();
         }
+    }
+
+    public static Users getUserPrincipalObject() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserDetails) {
+            return (Users) principal;
+        } else {
+            return null;
+        }
+    }
+
+    public static String getShortUrl(HttpServletRequest request, String code) {
+        String fullURL = request.getRequestURL().toString();
+        String servletPath = request.getServletPath().toString();
+        return fullURL.replace(servletPath, "/" + code);
     }
 }
