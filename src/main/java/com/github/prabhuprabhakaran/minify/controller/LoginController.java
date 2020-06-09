@@ -42,9 +42,7 @@ public class LoginController {
         if (logout.equals("true")) {
             model.addAttribute("logout", "You have been logged out.");
             model.addAttribute("logout_flag", true);
-            System.out.println("logout_flag=true");
         } else {
-            System.out.println("logout_flag=false");
             model.addAttribute("logout_flag", false);
         }
         return "login";
@@ -64,7 +62,7 @@ public class LoginController {
     public String register(@ModelAttribute Users user, Model model) {
         boolean created = false;
         try {
-            created = loginService.registerNewUser(user.getUsername(), user.getPassword());
+            created = loginService.registerNewUser(user.getUsername(), user.getPassword(), "");
             if (created) {
                 model.addAttribute("success", "Registered Sucessfully");
             } else {

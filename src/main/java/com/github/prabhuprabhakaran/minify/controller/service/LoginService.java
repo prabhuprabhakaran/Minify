@@ -16,9 +16,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.client.authentication.OAuth2LoginAuthenticationToken;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 /**
  *
@@ -32,16 +31,24 @@ public class LoginService implements UserDetailsService {
     @Autowired
     PasswordEncoder passwordEncoder;
 
-    public boolean registerNewUser(String username, String password) {
+    public boolean registerNewUser(String username, String password, String Id) {
         boolean lReturn = false;
         Optional<Users> findByUsername = userRepository.findByUsername(username.toLowerCase());
         if (!findByUsername.isPresent()) {
             Users users = new Users();
             users.setUsername(username.toLowerCase());
             users.setToken(UUID.randomUUID().toString());
-            users.setPassword(passwordEncoder.encode(password));
-            userRepository.save(users);
-            lReturn = true;
+            if (ObjectUtils.isEmpty(password) && ObjectUtils.isEmpty(Id)) {
+                lReturn = false;
+            } else {
+                if (!ObjectUtils.isEmpty(password)) {
+                    users.setPassword(passwordEncoder.encode(password));
+                } else if (!ObjectUtils.isEmpty(Id)) {
+                    users.setPassword(Id);
+                }
+                userRepository.save(users);
+                lReturn = true;
+            }
         } else if (findByUsername.isPresent()) {
             Users users = findByUsername.get();
             try {
@@ -64,7 +71,7 @@ public class LoginService implements UserDetailsService {
             SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(lUser, "", lUser.getAuthorities()));
             lReturn = true;
         } else {
-            boolean registerNewUser = registerNewUser(username, id);
+            boolean registerNewUser = registerNewUser(username, "", id);
             if (registerNewUser) {
                 lReturn = true;
             }

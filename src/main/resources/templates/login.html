@@ -32,21 +32,16 @@
                         <div class="form-group"> <label for="username">Username</label>: <input type="text" id="1_username" name="username" class="form-control" autofocus="autofocus" placeholder="Username"/> </div>
                         <div class="form-group"> <label for="password">Password</label>: <input type="password" id="1_password" name="password" class="form-control" placeholder="Password"/> </div>
                         <div class="form-group">
-                            <div class="row">
-                                <div class="offset-md-3 col-sm-6">
+                            <div class="row pt-3">
+                                <div class="col-sm-6">
                                     <input type="submit" name="login-submit" id="login-submit" class="form-control btn btn-info" value="Log In"/>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="g-signin2" data-longtitle="true" data-onsuccess="onSignIn" ></div>
                                 </div>
                             </div>
                         </div>
-                        <div class="pt-4">
-                            <h5>Sign In with</h5>
-                            <div class="row pt-3">
-                                <div class="g-signin2 offset-md-4 col-md-4" data-onsuccess="onSignIn"></div>
-                                <!--<a href="#" onclick="signOut();">Sign out</a>-->
-                            </div>
-                        </div>
                     </form>
-
                 </div>
                 <div class="col-md-6 login-form-2">
                     <h3>Register</h3>
@@ -70,6 +65,10 @@
         <script type="text/javascript" th:src="@{/webjars/bootstrap/4.5.0/js/bootstrap.min.js}"></script>
         <script>
             var flag = [[${logout_flag}]];
+//            function onSignInFailure() {
+//                flag = false;
+//            }
+
             function onSignIn(googleUser) {
                 if (!flag) {
                     var profile = googleUser.getBasicProfile();
@@ -88,6 +87,10 @@
 //                    window.location = "/app/login";
                 }
             }
+
+//            window.onload = function () {
+//                flag = false;
+//            }
 
             function signOut() {
                 var auth2 = gapi.auth2.getAuthInstance();

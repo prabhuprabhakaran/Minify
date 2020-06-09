@@ -1,4 +1,4 @@
-# **Minify - URL Shorten API**
+# ![](images/logo_128.png)**Minify - URL Shorten API**
 
 Minify is a URL Shortening API, which works on the following Authentication mechanisms
 
@@ -31,5 +31,18 @@ Redirection has been done by the shorten URL
 
 ```
 http://localhost:8081/r/GkPNMK
+```
+
+#### Compilation and Execution
+
+```
+ProjectDir> mvn clean install
+ProjectDir> java -jar target/Minify-1.0.0-SNAPSHOT.jar
+```
+
+Go to the below URL in Browser
+
+```
+http://localhost:8081
 ```
 
