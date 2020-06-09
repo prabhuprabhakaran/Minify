@@ -51,10 +51,10 @@ public class LoginController {
             if (created) {
                 model.addAttribute("success", "Registered Sucessfully");
             } else {
-                model.addAttribute("error", "Registration Failed");
+                model.addAttribute("error", "Registration Failed: Username already exists");
             }
         } catch (Exception e) {
-            model.addAttribute("error", "Username should be a valid Email");
+            model.addAttribute("error", "Registration Failed: Username should be a valid Email");
         }
         return "login";
     }
