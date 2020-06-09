@@ -15,7 +15,7 @@ Minify is a URL Shortening API, which works on the following Authentication mech
 
 ### Login Page
 
-![](C:\Users\prabhu prabhakaran\AppData\Local\Microsoft\Windows\INetCache\IE\YUDV77QK\Login[1].png)
+![](images/HomePage.png)
 
 ### Home Page
 
