@@ -33,7 +33,13 @@ public class DefaultController {
         return "redirect:/app/home";
     }
 
-    @GetMapping("{url}")
+    @RequestMapping("swagger")
+    public String home() {
+        return "redirect:/swagger-ui.html";
+    }
+//
+
+    @GetMapping("r/{url}")
     public String redirect(@PathVariable String url) {
         String lReturn = "redirect:/app/home";
         if (!ObjectUtils.isEmpty(url)) {

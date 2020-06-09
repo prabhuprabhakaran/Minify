@@ -1,9 +1,7 @@
 package com.github.prabhuprabhakaran.minify.controller;
 
 import com.github.prabhuprabhakaran.minify.controller.service.LoginService;
-import com.github.prabhuprabhakaran.minify.entity.URLEntity;
 import com.github.prabhuprabhakaran.minify.entity.Users;
-import com.github.prabhuprabhakaran.minify.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -42,14 +40,11 @@ public class LoginController {
 
     @RequestMapping("/Oauthlogin")
     public ResponseEntity login() {
-        System.out.println("Im Here Google");
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/register")
     public String register(@ModelAttribute Users user, Model model) {
-        System.out.println(user.getUsername());
-        System.out.println(user.getPassword());
         boolean created = false;
         try {
             created = loginService.registerNewUser(user.getUsername(), user.getPassword());

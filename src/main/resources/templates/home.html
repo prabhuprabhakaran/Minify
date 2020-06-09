@@ -36,12 +36,12 @@
             <div class = "col-md-6">
                 <div class="row">
                     <div class="col">
-                        <h6 class="float-right">UserName: <span th:text="${user}"/></h6> 
+                        <h6 class="float-right">UserName:&nbsp;<span th:text="${user}"/></h6> 
                     </div>
                 </div>
                 <div class="row">
                     <div class="col">
-                        <h6 class="float-right">APIKey: <span th:text="${apiKey}"/></h6> 
+                        <h6 class="float-right">APIKey:&nbsp;<a class="float-right" th:href="@{/swagger}" th:text="${apiKey}" target="_blank" />
                     </div>
                 </div>
                 <div class="row">
@@ -70,7 +70,7 @@
                         <tr th:each="url : ${urlList}">
                             <td> <span th:text="${url.id}" /> </td>
                             <td> <span th:text="${url.url}" />  </td>
-                            <td> <a th:href="@{/}+${url.shortenurl}" th:text="${url.shortenurl}" target="_blank" /> </td>
+                            <td> <a th:href="@{/r/}+${url.shortenurl}" th:text="${url.shortenurl}" target="_blank" /> </td>
                             <td> <span th:text="${url.createdAt}" />  </td>
                             <td >
                                 <form th:action="@{/app/home/url/delete/}+${url.id}" th:method="delete">

@@ -7,6 +7,9 @@ package com.github.prabhuprabhakaran.minify.controller;
 
 import com.github.prabhuprabhakaran.minify.controller.service.URLService;
 import com.github.prabhuprabhakaran.minify.entity.URLEntity;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -44,6 +47,19 @@ public class RestAPIController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Should be a valid HTTP or HTTPS URL");
         }
+    }
 
+    @GetMapping("/list")
+    public ResponseEntity encode(HttpServletRequest request) {
+        List<HashMap> lReturn = new ArrayList<>();
+        List<URLEntity> URLEntityList = lService.ListURLEntity();
+        if (URLEntityList.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        } else {
+            for (URLEntity uRLEntity : URLEntityList) {
+                lReturn.add(uRLEntity.getReturn(request));
+            }
+            return ResponseEntity.ok(lReturn);
+        }
     }
 }

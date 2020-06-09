@@ -56,7 +56,7 @@ public class SwaggerDocumentationConfig {
                 .useDefaultResponseMessages(true)
                 .forCodeGeneration(true)
                 .protocols(Sets.newHashSet("HTTP"))
-                .groupName("RA")
+                .groupName("Minify")
                 .select()
                 .apis(RequestHandlerSelectors.any())
                 .paths(PathSelectors.regex(DEFAULT_INCLUDE_PATTERN))

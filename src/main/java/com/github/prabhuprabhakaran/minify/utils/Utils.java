@@ -37,6 +37,6 @@ public class Utils {
     public static String getShortUrl(HttpServletRequest request, String code) {
         String fullURL = request.getRequestURL().toString();
         String servletPath = request.getServletPath().toString();
-        return fullURL.replace(servletPath, "/" + code);
+        return fullURL.replace(servletPath, "/r/" + code);
     }
 }

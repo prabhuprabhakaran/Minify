@@ -40,12 +40,10 @@ public final class MyEncoder {
         if (hashcode.length() == 0) {
             return "";
         }
-        System.out.println(hashcode);
         String lReturn = "";
         int currEncodeLength = ENCODE_MAX_VALUE_LENGTH;
         if (hashcode.length() > ENCODE_MAX_VALUE_LENGTH) {
             int parseInt = Integer.parseInt(hashcode.substring(0, ENCODE_MAX_VALUE_LENGTH));
-            System.out.println(parseInt);
             if (parseInt > ENCODE_MAX_VALUE) {
                 currEncodeLength = ENCODE_MAX_VALUE_LENGTH - 1;
                 parseInt = Integer.parseInt(hashcode.substring(0, ENCODE_MAX_VALUE_LENGTH - 1));
