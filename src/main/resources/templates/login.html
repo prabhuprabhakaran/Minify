@@ -15,7 +15,9 @@
             </div>
         </div>
         <div th:if="${logout}">
-            <div class="alert alert-info"> You have been logged out. </div>
+            <div class="alert alert-info"> 
+                <span th:text="${logout}"/> 
+            </div>
         </div>
         <div th:if="${success}">
             <div class="alert alert-success">
@@ -40,7 +42,7 @@
                             <h5>Sign In with</h5>
                             <div class="row pt-3">
                                 <div class="g-signin2 offset-md-4 col-md-4" data-onsuccess="onSignIn"></div>
-                                <!--<a href="#" onclick="signOut();">Sign out</a>-->
+                                <a href="#" onclick="signOut();">Sign out</a>
                             </div>
                         </div>
                     </form>
@@ -66,19 +68,34 @@
 
         <script type="text/javascript" th:src="@{/webjars/jquery/3.5.1/jquery.min.js/}"></script>
         <script type="text/javascript" th:src="@{/webjars/bootstrap/4.5.0/js/bootstrap.min.js}"></script>
-        <script> function onSignIn(googleUser) {
-                var profile = googleUser.getBasicProfile();
-                console.log('ID: ' + profile.getId());
-                console.log('Name: ' + profile.getName());
-                console.log('Image URL: ' + profile.getImageUrl());
-                console.log('Email: ' + profile.getEmail());
+        <script>
+            var flag = [[${logout_flag}]];
+            function onSignIn(googleUser) {
+                if (!flag) {
+                    var profile = googleUser.getBasicProfile();
+                    $.ajax({
+                        type: "post",
+                        data: profile,
+                        url: "/app/oauthlogin",
+                        dataType: "text",
+                        success: function (result) {
+                            window.location = result;
+                        }
+                    });
+                } else {
+                    signOut();
+                    flag = false;
+//                    window.location = "/app/login";
+                }
             }
+
             function signOut() {
                 var auth2 = gapi.auth2.getAuthInstance();
                 auth2.signOut().then(function () {
                     console.log('User signed out.');
                 });
             }
+
             var password = document.getElementById("r_password")
                     , confirm_password = document.getElementById("r_cpassword");
 

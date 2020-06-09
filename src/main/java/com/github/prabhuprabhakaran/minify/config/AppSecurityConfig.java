@@ -80,7 +80,7 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
                     .authorizeRequests()
                     .antMatchers("/**/favicon.ico", "/**/*.css", "/**/*.js", "/**/*.png", "/**/*.xlsx", "/fonts/**").permitAll()
                     .antMatchers("/swagger-ui.html", "/swagger-resources/**", "/v2/api-docs").permitAll()
-                    .antMatchers("/app/login", "/app/logout", "/app/register", "/*").permitAll()
+                    .antMatchers("/app/oauthlogin", "/app/login", "/app/logout", "/app/register", "/*").permitAll()
                     .antMatchers("/app/home").authenticated()
                     .antMatchers("/app/home/**").authenticated()
                     .and()
@@ -90,7 +90,7 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
                     .permitAll()
                     .defaultSuccessUrl("/app/home", true)
                     .and()
-                    .logout().logoutUrl("/app/logout").logoutSuccessUrl("/app/login");
+                    .logout().logoutUrl("/app/logout").logoutSuccessUrl("/app/login?logout=true");
         }
 
     }
