@@ -15,15 +15,15 @@ Minify is a URL Shortening API, which works on the following Authentication mech
 
 ### Login Page
 
-![](images/HomePage.png)
+![](images/Login.png)
 
 ### Home Page
 
-![](C:\Users\prabhu prabhakaran\AppData\Local\Microsoft\Windows\INetCache\IE\OVA3BQZ9\HomePage[1].png)
+![](images/HomePage.png)
 
 #### Swagger UI
 
-![](C:\Users\prabhu prabhakaran\AppData\Local\Microsoft\Windows\INetCache\IE\YUDV77QK\Swagger[1].png)
+![](images/Swagger.png)
 
 #### Redirection
 
